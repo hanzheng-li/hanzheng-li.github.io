@@ -11,6 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <link rel="stylesheet" href="assets/css/main.css" />
     <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+    <script src="https://www.google.com/recaptcha/api.js?render=6LeLCgsgAAAAAERIwKAp0v-C-dTWLsjHeAKe_o1A"></script>
   </head>
   <body class="is-preload">
 
@@ -163,7 +164,7 @@
             <li><a class="fab fa-weixin"></a>&ensp;hanzhengpiano</li>
           </ul>
 
-          <form method="post" action="https://getform.io/f/bbe42b07-6709-49c0-bbf5-554c3aa6c21d">
+          <form method="post" target="_blank" action="https://getform.io/f/e1e5961f-49c8-4ea8-a5ec-2481b5cf1195">
             <div class="fields">
               <div class="field half">
                 <label for="name">Name</label>
@@ -178,6 +179,7 @@
                 <textarea name="message" id="message" rows="4" required></textarea>
               </div>
             </div>
+            <input type="hidden" id="captchaResponse" name="g-recaptcha-response" />
             <ul class="actions">
               <li><input type="submit" value="Send Message" class="primary" /></li>
               <li><input type="reset" value="Reset" /></li>
@@ -446,6 +448,14 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
     <script src="assets/js/breakpoints.min.js"></script>
     <script src="assets/js/util.js"></script>
     <script src="assets/js/main.js"></script>
+    <script>
+       grecaptcha.ready(function() {
+           grecaptcha.execute('6LeLCgsgAAAAAERIwKAp0v-C-dTWLsjHeAKe_o1A', {action: 'submit'})
+           .then(function(token) {
+             document.getElementById('captchaResponse').value = token;
+           });
+         });
+    </script>
 
   </body>
 </html>
