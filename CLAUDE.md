@@ -37,7 +37,8 @@ Everything the visitor sees lives in **`index.html`**. The page is a faux-SPA:
 
 ### Styling: SASS is source, CSS is the served artifact
 
-- The browser loads only **`assets/css/main.css`** (committed, pre-compiled).
+- The browser loads **`assets/css/main.css`** (committed, pre-compiled) — plus a tiny
+  `assets/css/noscript.css` no-JS fallback (also compiled from `assets/sass/`).
 - **`assets/sass/`** is the original template's SASS source. There is **no compiler wired up**
   in this repo (no package.json / Gemfile / config). So either:
   - edit `assets/css/main.css` directly (simplest for small tweaks), **or**
@@ -52,7 +53,7 @@ Everything the visitor sees lives in **`index.html`**. The page is a faux-SPA:
 
 ### Vendored libraries (don't hand-edit)
 
-`assets/js/{jquery,browser,breakpoints,util}.min.js` and `assets/css/fontawesome-all.min.css`
+`assets/js/{jquery,browser,breakpoints}.min.js`, the non-minified `assets/js/util.js`, and `assets/css/fontawesome-all.min.css`
 + `assets/webfonts/` are third-party template/Font Awesome files. The logo and contact icons
 are Font Awesome classes (e.g. `fas fa-music`, `fas fa-at`).
 
@@ -74,6 +75,6 @@ are Font Awesome classes (e.g. `fas fa-music`, `fas fa-at`).
 
 ## Formatting
 
-HTML/CSS/JS in this repo were last tidied with **Prettier** (there's a "prettier formatting"
-commit but no config file is committed, so match the existing 4-space-indented, attribute-per-line
-style of `index.html` rather than assuming Prettier defaults).
+`index.html` was last tidied with **Prettier** (there's a "prettier formatting" commit but no
+config file is committed; the vendored JS/CSS were left untouched). Match the existing
+4-space-indented, attribute-per-line style of `index.html` rather than assuming Prettier defaults.
