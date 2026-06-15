@@ -55,7 +55,7 @@
 
 	// Nav.
 		var $nav = $header.children('nav'),
-			$nav_li = $nav.find('li');
+			$nav_li = $nav.children('ul').children('li');
 
 		// Add "middle" alignment classes if we're dealing with an even number of items.
 			if ($nav_li.length % 2 == 0) {
@@ -64,6 +64,131 @@
 				$nav_li.eq( ($nav_li.length / 2) ).addClass('is-middle');
 
 			}
+
+		// Submenu (Teaching dropdown).
+			var $submenuParents = $nav_li.filter('.has-submenu'),
+				hoverCapable = !!(window.matchMedia
+					&& window.matchMedia('(hover: hover) and (pointer: fine)').matches);
+
+			function closeSubmenus() {
+				$submenuParents.removeClass('open')
+					.children('a').attr('aria-expanded', 'false');
+			}
+
+			// Parent toggles its submenu instead of navigating.
+				$submenuParents.children('a').on('click', function(event) {
+
+					// Hover-capable pointers (desktop): hover reveals the submenu,
+					// so let the click follow the link to Student Achievements.
+						if (hoverCapable)
+							return;
+
+					event.preventDefault();
+					event.stopPropagation();
+
+					var $li = $(this).parent(),
+						isOpen = $li.hasClass('open');
+
+					// Close all, then open this one if it was closed.
+						closeSubmenus();
+
+						if (!isOpen)
+							$li.addClass('open')
+								.children('a').attr('aria-expanded', 'true');
+
+				});
+
+			// Any outside click (incl. selecting an item) closes open submenus.
+				$body.on('click', function() {
+					if ($submenuParents.hasClass('open'))
+						closeSubmenus();
+				});
+
+			// On hover/focus devices, keep aria-expanded synced with the CSS reveal.
+				if (hoverCapable)
+					$submenuParents
+						.on('mouseenter focusin', function() {
+							$(this).children('a').attr('aria-expanded', 'true');
+						})
+						.on('mouseleave focusout', function(event) {
+							if (!this.contains(event.relatedTarget))
+								$(this).children('a').attr('aria-expanded', 'false');
+						});
+
+			// Esc closes open submenus.
+				$window.on('keyup', function(event) {
+					if (event.key === 'Escape' || event.keyCode === 27)
+						closeSubmenus();
+				});
+
+	// Lightbox (view certificate images in-place instead of opening a new tab).
+		var $gallery = $('.cert-gallery');
+
+		if ($gallery.length > 0) {
+
+			var $lightbox = $(
+					'<div id="lightbox" role="dialog" aria-modal="true" aria-hidden="true">' +
+						'<button type="button" class="lightbox-close" aria-label="Close">&#10005;</button>' +
+						'<img alt="" />' +
+						'<div class="lightbox-caption"></div>' +
+					'</div>'
+				).appendTo($body);
+
+			var $lightboxImg = $lightbox.children('img'),
+				$lightboxCaption = $lightbox.children('.lightbox-caption'),
+				$lightboxClose = $lightbox.children('.lightbox-close'),
+				lightboxReturnFocus = null;
+
+			function hideLightbox() {
+				$lightbox.removeClass('visible').attr('aria-hidden', 'true');
+				$wrapper.removeAttr('inert');
+				if (lightboxReturnFocus) {
+					lightboxReturnFocus.focus();
+					lightboxReturnFocus = null;
+				}
+			}
+
+			// Open the clicked certificate in the lightbox.
+				$gallery.find('figure a').on('click', function(event) {
+
+					event.preventDefault();
+					event.stopPropagation();
+
+					var $figure = $(this).closest('figure'),
+						caption = $figure.find('figcaption').text().replace(/\s+/g, ' ').trim();
+
+					$lightboxImg
+						.attr('src', this.getAttribute('href'))
+						.attr('alt', $figure.find('img').attr('alt') || caption);
+					$lightboxCaption.text(caption);
+					$lightbox.attr('aria-label', caption);
+
+					lightboxReturnFocus = this;
+					$wrapper.attr('inert', '');
+					$lightbox.addClass('visible').attr('aria-hidden', 'false');
+					$lightboxClose[0].focus();
+
+				});
+
+			// Backdrop / close button dismisses; clicking the image itself does not.
+				$lightboxImg.on('click', function(event) {
+					event.stopPropagation();
+				});
+
+				$lightbox.on('click', function(event) {
+					event.stopPropagation();
+					hideLightbox();
+				});
+
+			// Esc closes the lightbox first (capture phase pre-empts the article's Esc handler).
+				window.addEventListener('keyup', function(event) {
+					if ((event.key === 'Escape' || event.keyCode === 27) && $lightbox.hasClass('visible')) {
+						hideLightbox();
+						event.stopPropagation();
+					}
+				}, true);
+
+		}
 
 	// Main.
 		var	delay = 325,
